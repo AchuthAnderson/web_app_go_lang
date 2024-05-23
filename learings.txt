@@ -1,0 +1,8 @@
+
+Response Writes:
+    - Default content type is text/plain
+    - Default Status code is 200
+    - User ResponseWriter.WriteHeader(http.Statuscode)
+
+    - TODO:
+        - use a Json File as a Database for now. 
