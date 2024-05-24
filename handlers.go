@@ -20,7 +20,7 @@ func getAllCourses() []Course {
 	
 	return ReadCoursesFromDbFile()
 }
-
+	
 func serverHome(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("<h1>This is my first API building"))
 }
@@ -28,7 +28,7 @@ func serverHome(w http.ResponseWriter, r *http.Request) {
 func handlerGetAllCourses(w http.ResponseWriter, r* http.Request) {
 
 	bytes, err := json.Marshal(getAllCourses())
-	
+
 	if err!=nil {
 		fmt.Println("Failed to marshall courses", err.Error())
 	}else {
@@ -109,16 +109,31 @@ func handlerDeleteCourse(w http.ResponseWriter, r* http.Request) {
 }
 
 func handleUpdateCourse(w http.ResponseWriter, r* http.Request) {
-	
-	
-	
-	
 	w.Header().Set(contentType, applicationJsonType)
 	
+	params := mux.Vars(r)
+	courseIdToBeUpdated := params["id"]  
 	if r.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("Request Body is missing")
 	}
+	courses := getAllCourses()
+	for index, course := range courses {
+		if course.CourseId == courseIdToBeUpdated {
+			courses = append(courses[:index], courses[index+1:]...)
+			var courseUpdated Course 
+			json.NewDecoder(r.Body).Decode(&courseUpdated)
+			courseUpdated.CourseId = courseIdToBeUpdated
+			courses = append(courses, courseUpdated)
 
+			bytes ,_ := json.Marshal(courses)
+			createAndWriteToMyDb(&bytes)
+			
+			w.WriteHeader(http.StatusOK)
+			break
+		} 
+	}
 
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode("Failed to update course")
 }
