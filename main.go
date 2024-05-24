@@ -41,6 +41,9 @@ func main() {
 	r.HandleFunc("/", serverHome).Methods("GET")
 	r.HandleFunc("/courses", handlerGetAllCourses).Methods("GET")
 	r.HandleFunc("/courses/{id}", handlerGetCourseByID).Methods("GET")
+	r.HandleFunc("/courses", handlerCreateCourse).Methods("POST")	
+	
+	r.HandleFunc("/courses/{id}", handlerDeleteCourse).Methods("Delete")
 	
 	//Starting Server
 	//log.Fatal(http.ListenAndServe(":4000", r))
@@ -49,4 +52,3 @@ func main() {
 	time.Sleep(time.Second * 5)
 	server.Shutdown(context.TODO())
 }
-
