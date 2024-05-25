@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: my-postgres
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password 
+      - POSTGRES_DB=achuth-db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  

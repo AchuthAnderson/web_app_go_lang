@@ -110,15 +110,34 @@ func handlerDeleteCourse(w http.ResponseWriter, r* http.Request) {
 
 func handleUpdateCourse(w http.ResponseWriter, r* http.Request) {
 	
-	
-	
-	
 	w.Header().Set(contentType, applicationJsonType)
+	params := mux.Vars(r)
+	courseIdTobeUpdated := params["id"]
 	
 	if r.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode("Request Body is missing")
 	}
 
+	courses := getAllCourses()
+	for index, course := range courses {
+		if course.CourseId == courseIdTobeUpdated {
+			courses = append(courses[:index], courses[index+1:]...)
+			var newCourse Course
+			json.NewDecoder(r.Body).Decode(&newCourse)
+			newCourse.CourseId = courseIdTobeUpdated
+			courses = append(courses, newCourse)
 
+			bytes, err := json.Marshal(courses)
+			if err != nil {
+				panic("Failed to marshell courses with error: " +err.Error())
+			}
+			createAndWriteToMyDb(&bytes)
+			w.WriteHeader(http.StatusOK)
+			break
+		}
+	} 
+
+	w.WriteHeader(http.StatusBadRequest)
+	json.NewEncoder(w).Encode("Failed to update course")
 }

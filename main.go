@@ -42,12 +42,15 @@ func main() {
 	r.HandleFunc("/courses", handlerGetAllCourses).Methods("GET")
 	r.HandleFunc("/courses/{id}", handlerGetCourseByID).Methods("GET")
 	r.HandleFunc("/courses", handlerCreateCourse).Methods("POST")	
-	
+	r.HandleFunc("/courses/id", handleUpdateCourse).Methods("PUT")
 	r.HandleFunc("/courses/{id}", handlerDeleteCourse).Methods("Delete")
 	
 	//Starting Server
 	//log.Fatal(http.ListenAndServe(":4000", r))
 
+	conn := GetDbConn()
+	GetAllAuthors(conn)
+	GetAllCourses(conn)
 	log.Fatal(server.ListenAndServe())
 	time.Sleep(time.Second * 5)
 	server.Shutdown(context.TODO())
