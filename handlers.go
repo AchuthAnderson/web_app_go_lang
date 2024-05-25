@@ -109,14 +109,7 @@ func handlerDeleteCourse(w http.ResponseWriter, r* http.Request) {
 }
 
 func handleUpdateCourse(w http.ResponseWriter, r* http.Request) {
-<<<<<<< HEAD
-	
-=======
->>>>>>> 0bc04e684d6a5fc75acf38f8853b6834154f1a54
-	w.Header().Set(contentType, applicationJsonType)
-	params := mux.Vars(r)
-	courseIdTobeUpdated := params["id"]
-	
+	w.Header().Set(contentType, applicationJsonType)	
 	params := mux.Vars(r)
 	courseIdToBeUpdated := params["id"]  
 	if r.Body == nil {
