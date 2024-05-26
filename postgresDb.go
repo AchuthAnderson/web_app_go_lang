@@ -9,21 +9,23 @@ import (
 /*
 	- TODO:
 		- Connecting to DB
-			- Using Connection string
+			- Using Connection string - DONE
 			- ConnectionPool
-				- Default Properties 
-				- How to modify connection pool properties. 
+				- Default Properties - DONE 
+				- How to modify connection pool properties -DONE 
 		- Rows
-			- Map them to Struct
-			- Check Name and type of the column 
+			- Map them to Struct - DONE
+			- Check Name and type of the column - DONE 
 			- Transaction
 				- Create
 				- Start
 				- End
 				- Rollover.
-		- Create a table in DB 
+		- Create a table in DB - DONE use db.Execute
 		- Create a DB in the application. 
 			- Read  current DB name from Application. 
+		- Using Context
+		- Argument replacing in queries	
 */
 
 const DbConnStr = "postgres://postgres:password@localhost:5432/achuth-db?sslmode=disable"
@@ -34,6 +36,10 @@ func GetDbConn() *sql.DB {
 		log.Fatal(err)
 	}
 	fmt.Println("Connect is successfull")
+	
+	fmt.Println("Printing current DB stats")
+	stats := db.Stats()
+	fmt.Printf("%v \n", stats)
 	return db
 }
 
@@ -105,6 +111,35 @@ func GetAllCourses(conn *sql.DB) {
 	}
 	rows.Close()
 	fmt.Println("All courses from DB are :", courses)
+}
+
+func AlterTableCourseToHaveUniqueCourseId(db *sql.DB) {
+	fmt.Println("making course id column in course table unique...")
+	_, err := db.Exec("alter table course add constraint unique_course_id unique (course_id)")		
+	if err != nil {
+		log.Fatal("falied to make course_id unique in course table..: ", err.Error())
+	}
+	fmt.Println("course_id column in course table should be unique now")
+}
+
+func demoTransaction(db *sql.DB) {
+	fmt.Println("Starting to transaction")
+	tx , _:= db.Begin()
+	_ , err := db.Exec("insert into course(course_id, course_name, course_price) values (3, 'Rock the JVM scala course', 199)")
+	if err!=nil {
+		log.Fatal("Error occured while exeucting query: ", err.Error())
+		tx.Rollback()
+		return
+	}
+	_, err = db.Exec("insert into course (course_id, course_name, course_price) values ('2', 'ReactJS', '499')")
+	if err!=nil {
+		log.Fatal("Error occured while exeucting query: ", err.Error())
+		tx.Rollback()
+		return 
+	}
+	fmt.Println("All queries executed without any error")
+	fmt.Println("Closing transaction")
+	tx.Commit()
 }
 
 

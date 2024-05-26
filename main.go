@@ -49,8 +49,11 @@ func main() {
 	//log.Fatal(http.ListenAndServe(":4000", r))
 
 	conn := GetDbConn()
-	GetAllAuthors(conn)
-	GetAllCourses(conn)
+	//GetAllAuthors(conn)
+	//GetAllCourses(conn)
+	//AlterTableCourseToHaveUniqueCourseId(conn)
+	demoTransaction(conn)
+
 	log.Fatal(server.ListenAndServe())
 	time.Sleep(time.Second * 5)
 	server.Shutdown(context.TODO())
