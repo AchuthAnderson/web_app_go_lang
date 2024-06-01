@@ -18,7 +18,7 @@ const (
 func postStatup() {
 	bytes, err := json.Marshal(getAllCourses())
 	if(err != nil) {
-		panic("Failed to unmarshal getAllCourses "+ err.Error())
+		log.Fatal("Failed to unmarshal getAllCourses ", err.Error())
 	}
 	//WriteToMyDbFile(&bytes)
 	createAndWriteToMyDb(&bytes)
@@ -47,7 +47,11 @@ func main() {
 	
 	//Starting Server
 	//log.Fatal(http.ListenAndServe(":4000", r))
+	//connectToPostgresUsingGORM()
+	//testGORMDBConnection()
 
+	db, _ := connectToPostgresSql()
+	db.AutoMigrate(&NewUser{})
 	conn := GetDbConn()
 	//GetAllAuthors(conn)
 	//GetAllCourses(conn)
@@ -57,4 +61,24 @@ func main() {
 	log.Fatal(server.ListenAndServe())
 	time.Sleep(time.Second * 5)
 	server.Shutdown(context.TODO())
+}
+
+func connectToPostgresUsingGORM() {
+	dbConn , err := connectToPostgresSql()
+	if err!=nil {
+		log.Fatal("Error occured while connecting to postgreSql from GORM: ", err.Error())
+	}
+
+	db, _ := dbConn.DB()
+	err = db.Ping()
+	if err!=nil {
+		log.Fatal("Failed to ping Db with error: ", err.Error())
+	}
+	fmt.Println("Ping successfull..")
+
+	err = dbConn.AutoMigrate(&User{})
+	if err!=nil {
+		log.Fatal("AutoMigration failed with Error: ", err.Error())
+	}
+	fmt.Println("Auto Migration successful")
 }
