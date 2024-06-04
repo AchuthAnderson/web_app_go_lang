@@ -3,3 +3,6 @@
 - Return Error response if course ID is not found.
 - When a new courses is added update the file. 
 - See if you can append the Json to file without reading file entirely.
+
+- Authentication and Authorization:
+    - 

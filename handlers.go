@@ -26,6 +26,18 @@ func serverHome(w http.ResponseWriter, r *http.Request) {
 
 func handlerGetAllCourses(w http.ResponseWriter, r* http.Request) {
 
+	tokenString := r.Header.Get("Authorization")
+	//Check if token is empty
+	if tokenString == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Println("Missing Authorization header")
+		return 
+	}
+	//Get the token string out excluding Bearer word at the start of token
+	tokenString = tokenString[len("Bearer :"):]
+	 validateJWT(tokenString)
+	fmt.Println("Validation successful")
+	
 	bytes, err := json.Marshal(getAllCourses())
 
 	if err!=nil {
